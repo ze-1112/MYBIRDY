@@ -9,10 +9,13 @@
             padding: 0;
             user-select: none;
             -webkit-user-select: none;
+            /* crucial for mobile responsiveness */
+            touch-action: none; 
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Press Start 2P', cursive; /* Retro font */
+            font-family: 'Press Start 2P', cursive;
             background-color: #333;
             height: 100vh;
             width: 100vw;
@@ -20,7 +23,6 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            touch-action: none; /* Prevents scrolling on mobile */
         }
 
         /* The main game container */
@@ -33,9 +35,8 @@
             overflow: hidden;
             background-color: #70c5ce; /* Sky color */
             
-            /* Hardware Acceleration Hints for Mobile */
-            transform: translateZ(0);
-            will-change: transform;
+            /* Force GPU acceleration */
+            transform: translate3d(0,0,0);
         }
 
         canvas {
@@ -58,7 +59,6 @@
             align-items: center;
             text-align: center;
             z-index: 10;
-            transition: opacity 0.2s;
         }
 
         .hidden {
@@ -66,7 +66,7 @@
             pointer-events: none !important;
         }
 
-        /* HUD: Score and Pause Button */
+        /* HUD */
         #hud {
             position: absolute;
             top: 10px;
@@ -79,7 +79,6 @@
             pointer-events: none; 
         }
 
-        /* HUD elements need pointer-events auto to be clickable */
         #hud > * {
             pointer-events: auto;
         }
@@ -115,7 +114,7 @@
         }
 
         .btn-start {
-            background-color: #57C136; /* Green */
+            background-color: #57C136;
             color: white;
             font-size: 16px;
             padding: 15px 30px;
@@ -123,7 +122,7 @@
         }
 
         .btn-pause {
-            background-color: #E8BB28; /* Yellow */
+            background-color: #E8BB28;
             color: white;
             width: 40px;
             height: 40px;
@@ -141,12 +140,7 @@
             margin-top: 15px;
         }
 
-        /* Screen specific styles */
-        #start-screen {
-            background-color: rgba(0,0,0,0.4);
-            pointer-events: auto;
-        }
-        
+        /* Messages */
         #get-ready-message {
             font-size: 12px;
             color: white;
@@ -156,36 +150,14 @@
             animation: pulse 1.5s infinite;
         }
 
-        #game-over-screen {
-            background-color: rgba(0,0,0,0.6);
-            pointer-events: auto;
-        }
+        #start-screen { background-color: rgba(0,0,0,0.4); pointer-events: auto; }
+        #game-over-screen { background-color: rgba(0,0,0,0.6); pointer-events: auto; }
+        #pause-screen { background-color: rgba(0,0,0,0.4); pointer-events: auto; }
 
-        #pause-screen {
-            background-color: rgba(0,0,0,0.4);
-            pointer-events: auto;
-        }
+        h1 { font-size: 40px; color: #fff; text-shadow: 3px 3px 0 #000; margin-bottom: 10px; line-height: 1.2; }
+        h1 span { color: #E8BB28; }
+        h2 { font-size: 30px; color: #E65036; text-shadow: 2px 2px 0 #000; margin-bottom: 20px; }
 
-        h1 {
-            font-size: 40px;
-            color: #fff;
-            text-shadow: 3px 3px 0 #000;
-            margin-bottom: 10px;
-            line-height: 1.2;
-        }
-        
-        h1 span {
-            color: #E8BB28;
-        }
-
-        h2 {
-            font-size: 30px;
-            color: #E65036; /* Red */
-            text-shadow: 2px 2px 0 #000;
-            margin-bottom: 20px;
-        }
-
-        /* Score Board Box */
         .score-board {
             background-color: #ded895;
             border: 2px solid #543847;
@@ -195,35 +167,11 @@
             margin-bottom: 20px;
         }
 
-        .score-item {
-            margin-bottom: 10px;
-        }
-        
-        .score-item:last-child {
-            margin-bottom: 0;
-        }
+        .score-item { margin-bottom: 10px; }
+        .score-val { font-size: 20px; color: #333; }
+        .new-best { color: #E65036; font-size: 10px; margin-top: 5px; animation: blink 1s infinite; }
 
-        .score-val {
-            font-size: 20px;
-            color: #333;
-        }
-
-        .new-best {
-            color: #E65036;
-            font-size: 10px;
-            margin-top: 5px;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 0.4; }
-        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        @keyframes pulse { 0%, 100% { opacity: 0.8; } 50% { opacity: 0.4; } }
         
         /* --- CSS FILE CONTENT END --- */
-    
