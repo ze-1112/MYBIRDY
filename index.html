@@ -8,17 +8,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Flappy Bird</title>
-    
-    <!-- If using separate CSS file, replace the <style> block with: <link rel="stylesheet" href="style.css"> -->
-          <link rel="stylesheet" href="style.css">
-   
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div id="game-container">
         <canvas id="gameCanvas" width="320" height="480"></canvas>
 
-        <!-- Heads Up Display (Score & Pause) -->
         <div id="hud" class="hidden">
             <div>
                 <div class="label">SCORE</div>
@@ -27,18 +23,15 @@
             <button id="pauseBtn" class="btn-pause">||</button>
         </div>
         
-        <!-- Get Ready Overlay (Part of HUD logic essentially) -->
         <div id="get-ready-overlay" class="overlay hidden">
              <div id="get-ready-message">TAP TO JUMP</div>
         </div>
 
-        <!-- Start Screen -->
         <div id="start-screen" class="overlay">
             <h1>FLAPPY<br><span>BIRD</span></h1>
             <button id="startBtn" class="btn-start">START GAME</button>
         </div>
 
-        <!-- Game Over Screen -->
         <div id="game-over-screen" class="overlay hidden">
             <h2>GAME OVER</h2>
             <div class="score-board">
@@ -55,14 +48,14 @@
             <button id="restartBtn" class="btn-restart">PLAY AGAIN</button>
         </div>
 
-        <!-- Pause Screen -->
         <div id="pause-screen" class="overlay hidden">
             <h2 style="color: white;">PAUSED</h2>
             <button id="resumeBtn" class="btn-restart" style="background-color:#4ec0ca">RESUME</button>
         </div>
     </div>
 
-    <!-- If using separate JS file, replace the <script> block with: <script src="script.js"></script> -->
-    <script src="engine.js"></script>
+    <script src="engine.js">
+
+    </script>
 </body>
 </html>
