@@ -1,180 +1,67 @@
-        /* --- CSS FILE CONTENT START --- */
-        /* Save this content as style.css */
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+    --- HTML FILE CONTENT START --- 
+    Save this structure as index.html 
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Flappy Bird</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+     <br>
+     
+     
 
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            -webkit-user-select: none;
-            /* crucial for mobile responsiveness */
-            touch-action: none; 
-            -webkit-tap-highlight-color: transparent;
-        }
+    <div id="game-container">
+     <h2>cc c ze</h2>
+        <canvas id="gameCanvas" width="320" height="480"></canvas>
 
-        body {
-            font-family: 'Press Start 2P', cursive;
-            background-color: #333;
-            height: 100vh;
-            width: 100vw;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-        h2{
-          text-align: center;
-        }
-
-        /* The main game container */
-        #game-container {
-            position: relative;
-            width: 320px;
-            height: 480px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            border-radius: 10px;
-            overflow: hidden;
-            background-color: #70c5ce; /* Sky color */
-            
-            /* Force GPU acceleration */
-            transform: translate3d(0,0,0);
-        }
-
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* UI Overlays */
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none; 
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            z-index: 10;
-        }
-
-        .hidden {
-            opacity: 0;
-            pointer-events: none !important;
-        }
-
-        /* HUD */
-        #hud {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            z-index: 20;
-            pointer-events: none; 
-        }
-
-        #hud > * {
-            pointer-events: auto;
-        }
-
-        .score-text {
-            color: white;
-            font-size: 24px;
-            text-shadow: 2px 2px 0 #000;
-            margin-top: 5px;
-        }
+        <div id="hud" class="hidden">
+            <div>
+                <div class="label">SCORE</div>
+                <div id="currentScore" class="score-text">0</div>
+            </div>
+            <button id="pauseBtn" class="btn-pause">||</button>
+        </div>
         
-        .label {
-            font-size: 10px;
-            color: #eee;
-            text-shadow: 1px 1px 0 #000;
-            margin-bottom: 2px;
-        }
+        <div id="get-ready-overlay" class="overlay hidden">
+             <div id="get-ready-message">TAP TO JUMP</div>
+        </div>
 
-        /* Buttons */
-        button {
-            font-family: 'Press Start 2P', cursive;
-            border: 2px solid #fff;
-            border-radius: 5px;
-            cursor: pointer;
-            pointer-events: auto;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
-            transition: transform 0.1s, box-shadow 0.1s;
-        }
+        <div id="start-screen" class="overlay">
+            <h1>FLAPPY<br><span>BIRD</span></h1>
+            <button id="startBtn" class="btn-start">START GAME</button>
+        </div>
 
-        button:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
-        }
+        <div id="game-over-screen" class="overlay hidden">
+            <h2>GAME OVER</h2>
+            <div class="score-board">
+                <div class="score-item">
+                    <div class="label" style="color:#543847">SCORE</div>
+                    <div id="finalScore" class="score-val">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="label" style="color:#E65036">BEST</div>
+                    <div id="bestScore" class="score-val">0</div>
+                    <div id="newRecord" class="new-best hidden">NEW!</div>
+                </div>
+            </div>
+            <button id="restartBtn" class="btn-restart">PLAY AGAIN</button>
+        </div>
 
-        .btn-start {
-            background-color: #57C136;
-            color: white;
-            font-size: 16px;
-            padding: 15px 30px;
-            margin-top: 20px;
-        }
-
-        .btn-pause {
-            background-color: #E8BB28;
-            color: white;
-            width: 40px;
-            height: 40px;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-restart {
-            background-color: #57C136;
-            color: white;
-            font-size: 14px;
-            padding: 12px 24px;
-            margin-top: 15px;
-        }
-
-        /* Messages */
-        #get-ready-message {
-            font-size: 12px;
-            color: white;
-            margin-top: 100px;
-            text-shadow: 1px 1px 0 #000;
-            opacity: 0.8;
-            animation: pulse 1.5s infinite;
-        }
-
-        #start-screen { background-color: rgba(0,0,0,0.4); pointer-events: auto; }
-        #game-over-screen { background-color: rgba(0,0,0,0.6); pointer-events: auto; }
-        #pause-screen { background-color: rgba(0,0,0,0.4); pointer-events: auto; }
-
-        h1 { font-size: 40px; color: #fff; text-shadow: 3px 3px 0 #000; margin-bottom: 10px; line-height: 1.2; }
-        h1 span { color: #E8BB28; }
-        h2 { font-size: 30px; color: #E65036; text-shadow: 2px 2px 0 #000; margin-bottom: 20px; }
-
-        .score-board {
-            background-color: #ded895;
-            border: 2px solid #543847;
-            padding: 20px;
-            border-radius: 5px;
-            width: 200px;
-            margin-bottom: 20px;
-        }
-
-        .score-item { margin-bottom: 10px; }
-        .score-val { font-size: 20px; color: #333; }
-        .new-best { color: #E65036; font-size: 10px; margin-top: 5px; animation: blink 1s infinite; }
-
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        @keyframes pulse { 0%, 100% { opacity: 0.8; } 50% { opacity: 0.4; } }
+        <div id="pause-screen" class="overlay hidden">
+            <h2 style="color: white;">PAUSED</h2>
+            <button id="resumeBtn" class="btn-restart" style="background-color:#4ec0ca">RESUME</button>
+        </div>
         
-        /* --- CSS FILE CONTENT END --- */
+    </div>
+
+    <script src="engine.js">
+
+    </script>
+</body>
+</html>
