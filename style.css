@@ -24,6 +24,9 @@
             align-items: center;
             overflow: hidden;
         }
+        h2{
+          text-align: center;
+        }
 
         /* The main game container */
         #game-container {
@@ -175,3 +178,4 @@
         @keyframes pulse { 0%, 100% { opacity: 0.8; } 50% { opacity: 0.4; } }
         
         /* --- CSS FILE CONTENT END --- */
+
