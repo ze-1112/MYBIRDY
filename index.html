@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+    --- HTML FILE CONTENT START --- 
+    Save this structure as index.html 
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Flappy Bird</title>
+    
+    <!-- If using separate CSS file, replace the <style> block with: <link rel="stylesheet" href="style.css"> -->
+          <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="game-container">
+        <canvas id="gameCanvas" width="320" height="480"></canvas>
+
+        <!-- Heads Up Display (Score & Pause) -->
+        <div id="hud" class="hidden">
+            <div>
+                <div class="label">SCORE</div>
+                <div id="currentScore" class="score-text">0</div>
+            </div>
+            <button id="pauseBtn" class="btn-pause">||</button>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="overlay">
+            <h1>FLAPPY<br><span>BIRD</span></h1>
+            <button id="startBtn" class="btn-start">START</button>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="game-over-screen" class="overlay hidden">
+            <h2>GAME OVER</h2>
+            <div class="score-board">
+                <div class="score-item">
+                    <div class="label" style="color:#543847">SCORE</div>
+                    <div id="finalScore" class="score-val">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="label" style="color:#E65036">BEST</div>
+                    <div id="bestScore" class="score-val">0</div>
+                    <div id="newRecord" class="new-best hidden">NEW!</div>
+                </div>
+            </div>
+            <button id="restartBtn" class="btn-restart">PLAY AGAIN</button>
+        </div>
+
+        <!-- Pause Screen -->
+        <div id="pause-screen" class="overlay hidden">
+            <h2 style="color: white;">PAUSED</h2>
+            <button id="resumeBtn" class="btn-restart" style="background-color:#4ec0ca">RESUME</button>
+        </div>
+    </div>
+    <script src="engine.js"></script>
+
+    <!-- If using separate JS file, replace the <script> block with: <script src="script.js"></script> -->
+        
+</body>
+</html>
