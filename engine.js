@@ -1,4 +1,4 @@
-/* --- JS FILE CONTENT START --- */
+        /* --- JS FILE CONTENT START --- */
         /* Save this content as script.js */
 
         // --- Select DOM Elements ---
@@ -9,6 +9,7 @@
         const gameOverScreen = document.getElementById('game-over-screen');
         const pauseScreen = document.getElementById('pause-screen');
         const hud = document.getElementById('hud');
+        const getReadyOverlay = document.getElementById('get-ready-overlay');
         
         const scoreEl = document.getElementById('currentScore');
         const finalScoreEl = document.getElementById('finalScore');
@@ -24,17 +25,19 @@
         let frames = 0;
         let score = 0;
         let highScore = localStorage.getItem('flappyHighScore') || 0;
-        let gameState = 'START'; // 'START', 'PLAYING', 'PAUSED', 'GAMEOVER'
+        
+        // States: START, GET_READY, PLAYING, PAUSED, GAMEOVER
+        let gameState = 'START'; 
         let gameLoopId;
 
-        // --- Game Constants ---
+        // --- Game Constants (Optimized for speed) ---
         const DEGREE = Math.PI / 180;
-        const GRAVITY = 0.25;
-        const FLAP_STRENGTH = -4.5;
-        const PIPE_SPEED = 2;
-        const PIPE_SPAWN_RATE = 100; // frames
+        const GRAVITY = 0.4;         
+        const FLAP_STRENGTH = -6.2;  
+        const PIPE_SPEED = 3.0;       
+        const PIPE_SPAWN_RATE = 75; 
         const PIPE_WIDTH = 52;
-        const PIPE_GAP = 100;
+        const PIPE_GAP = 110;      
 
         // --- Game Objects ---
 
@@ -50,16 +53,20 @@
             draw: function() {
                 ctx.save();
                 ctx.translate(this.x, this.y);
-                // Rotate bird based on speed
-                this.rotation = this.speed * 3 * DEGREE;
-                // Clamp rotation
-                if(this.rotation > 25 * DEGREE) this.rotation = 25 * DEGREE;
-                if(this.rotation < -90 * DEGREE) this.rotation = -90 * DEGREE;
+                
+                // Rotation logic
+                if (gameState === 'GET_READY') {
+                    this.rotation = 0;
+                } else {
+                    this.rotation = this.speed * 3 * DEGREE;
+                    if(this.rotation > 25 * DEGREE) this.rotation = 25 * DEGREE;
+                    if(this.rotation < -90 * DEGREE) this.rotation = -90 * DEGREE;
+                }
                 
                 ctx.rotate(this.rotation);
                 
-                // Draw Bird (Yellow Body)
-                ctx.fillStyle = "#FFD700";
+                // Body
+                ctx.fillStyle = "#FFD700"; // Gold
                 ctx.fillRect(-this.w/2, -this.h/2, this.w, this.h);
                 // Outline
                 ctx.strokeStyle = "#333";
@@ -84,16 +91,23 @@
             },
             
             update: function() {
-                this.speed += GRAVITY;
-                this.y += this.speed;
-
-                // Ceiling collision detection
-                if (this.y + this.h/2 < 0) {
-                    this.y = this.h/2;
+                // If in Get Ready state, hover gently
+                if (gameState === 'GET_READY') {
+                    // Simple sine wave hover
+                    this.y = 150 + Math.sin(frames * 0.1) * 5;
                     this.speed = 0;
-                }
+                    this.rotation = 0;
+                } else {
+                    // Normal physics
+                    this.speed += GRAVITY;
+                    this.y += this.speed;
 
-                // Floor collision is handled in the main loop
+                    // Ceiling Check
+                    if (this.y + this.h/2 < 0) {
+                        this.y = this.h/2;
+                        this.speed = 0;
+                    }
+                }
             },
 
             reset: function() {
@@ -112,17 +126,18 @@
                     let topY = p.y;
                     let bottomY = p.y + PIPE_GAP;
                     
-                    // Draw Top Pipe
-                    ctx.fillStyle = "#2E8B57"; // Green
+                    // Top Pipe
+                    ctx.fillStyle = "#2E8B57";
                     ctx.fillRect(p.x, 0, PIPE_WIDTH, topY);
                     ctx.strokeStyle = "#333";
+                    ctx.lineWidth = 2;
                     ctx.strokeRect(p.x, 0, PIPE_WIDTH, topY);
                     // Top Cap
                     ctx.fillRect(p.x - 2, topY - 20, PIPE_WIDTH + 4, 20);
                     ctx.strokeRect(p.x - 2, topY - 20, PIPE_WIDTH + 4, 20);
                     
-                    // Draw Bottom Pipe
-                    ctx.fillRect(p.x, bottomY, PIPE_WIDTH, canvas.height - bottomY - 20); // -20 for floor
+                    // Bottom Pipe
+                    ctx.fillRect(p.x, bottomY, PIPE_WIDTH, canvas.height - bottomY - 20); 
                     ctx.strokeRect(p.x, bottomY, PIPE_WIDTH, canvas.height - bottomY - 20);
                     // Bottom Cap
                     ctx.fillRect(p.x - 2, bottomY, PIPE_WIDTH + 4, 20);
@@ -131,11 +146,10 @@
             },
             
             update: function() {
+                if(gameState !== 'PLAYING') return;
+
                 // Add new pipe
                 if(frames % PIPE_SPAWN_RATE == 0){
-                    // Calculate random position
-                    // Available height: canvas.height - floor(20)
-                    // We need to fit the GAP and some buffer
                     let minY = 50;
                     let maxY = canvas.height - 20 - PIPE_GAP - 50;
                     
@@ -150,16 +164,13 @@
                     let p = this.position[i];
                     p.x -= PIPE_SPEED;
                     
-                    // Remove pipe if it goes off screen
                     if(p.x + PIPE_WIDTH <= 0){
                         this.position.shift();
-                        // i decrement because array length changed
                         i--;
                         continue;
                     }
                     
                     // Collision Logic
-                    // Pipe logic
                     let birdLeft = bird.x - bird.w/2 + 4;
                     let birdRight = bird.x + bird.w/2 - 4;
                     let birdTop = bird.y - bird.h/2 + 4;
@@ -170,15 +181,12 @@
                     let topPipeBottom = p.y;
                     let bottomPipeTop = p.y + PIPE_GAP;
                     
-                    // Check X overlap
                     if(birdRight > pipeLeft && birdLeft < pipeRight){
-                        // Check Y overlap (hit top pipe OR hit bottom pipe)
                         if(birdTop < topPipeBottom || birdBottom > bottomPipeTop){
                             gameOver();
                         }
                     }
                     
-                    // Score update
                     if(p.x + PIPE_WIDTH < bird.x && !p.passed){
                         score++;
                         scoreEl.innerText = score;
@@ -197,7 +205,23 @@
                 // Floor
                 ctx.fillStyle = "#D2B48C";
                 ctx.fillRect(0, canvas.height - 20, canvas.width, 20);
-                // Floor Border
+                
+                // Moving floor effect
+                ctx.beginPath();
+                ctx.strokeStyle = "#A0522D";
+                ctx.lineWidth = 2;
+                
+                // Move floor texture based on frame count
+                let offset = (frames * PIPE_SPEED) % 20;
+                
+                for(let i = 0; i <= canvas.width + 20; i+=20) {
+                    let x = i - offset;
+                    ctx.moveTo(x, canvas.height - 20);
+                    ctx.lineTo(x - 10, canvas.height);
+                }
+                ctx.stroke();
+
+                // Floor Top Border
                 ctx.beginPath();
                 ctx.moveTo(0, canvas.height - 20);
                 ctx.lineTo(canvas.width, canvas.height - 20);
@@ -209,18 +233,18 @@
         // --- Control Functions ---
 
         function init() {
-            // Event Listeners
-            startBtn.addEventListener('click', startGame);
-            restartBtn.addEventListener('click', startGame);
+            // UI Buttons
+            startBtn.addEventListener('click', setGetReadyState);
+            restartBtn.addEventListener('click', setGetReadyState);
             
             pauseBtn.addEventListener('click', togglePause);
             resumeBtn.addEventListener('click', togglePause);
             
-            // Controls (Space, Click, Touch)
+            // Input Handling
             window.addEventListener('keydown', function(e){
                 if(e.code === 'Space'){
-                    e.preventDefault(); // prevent scrolling
-                    action();
+                    e.preventDefault(); 
+                    handleInput();
                 }
                 if(e.code === 'KeyP' || e.code === 'Escape') {
                     togglePause();
@@ -228,58 +252,67 @@
             });
             
             canvas.addEventListener('mousedown', function(e){
-                action();
+                handleInput();
             });
             
             canvas.addEventListener('touchstart', function(e){
                 e.preventDefault();
-                action();
+                handleInput();
             }, {passive: false});
             
-            // Initial Render
+            // Initial Draw
             background.draw();
             bird.draw();
         }
 
-        function action() {
-            if (gameState === 'PLAYING') {
+        function handleInput() {
+            if (gameState === 'GET_READY') {
+                gameState = 'PLAYING';
+                getReadyOverlay.classList.add('hidden');
+                bird.flap();
+            } else if (gameState === 'PLAYING') {
                 bird.flap();
             }
         }
 
-        function startGame() {
+        function setGetReadyState() {
             bird.reset();
             pipes.reset();
             score = 0;
             frames = 0;
             scoreEl.innerText = score;
             
-            // UI
+            // Hide Screens
             startScreen.classList.add('hidden');
             gameOverScreen.classList.add('hidden');
             pauseScreen.classList.add('hidden');
-            hud.classList.remove('hidden');
             
-            gameState = 'PLAYING';
-            loop();
+            // Show HUD and Ready Message
+            hud.classList.remove('hidden');
+            getReadyOverlay.classList.remove('hidden');
+            
+            gameState = 'GET_READY';
+            
+            // Ensure loop is running if we were stopped
+            if(!gameLoopId) loop();
         }
 
         function togglePause() {
             if(gameState === 'PLAYING'){
                 gameState = 'PAUSED';
-                cancelAnimationFrame(gameLoopId);
                 pauseScreen.classList.remove('hidden');
             } else if (gameState === 'PAUSED'){
                 gameState = 'PLAYING';
                 pauseScreen.classList.add('hidden');
-                loop();
+                // No need to call loop() here as requestAnimationFrame usually handles it,
+                // but if using cancelAnimationFrame logic, we'd restart it.
+                // In this implementation we just pause 'update' logic but keep drawing.
             }
         }
 
         function gameOver() {
             gameState = 'GAMEOVER';
             
-            // High Score Logic
             if (score > highScore) {
                 highScore = score;
                 localStorage.setItem('flappyHighScore', highScore);
@@ -292,19 +325,29 @@
             bestScoreEl.innerText = highScore;
             
             hud.classList.add('hidden');
+            getReadyOverlay.classList.add('hidden');
             gameOverScreen.classList.remove('hidden');
         }
 
         function update() {
+            // Background updates (moving floor)
+            if(gameState === 'PLAYING' || gameState === 'GET_READY') {
+                // We update frames to animate floor
+            }
+
             bird.update();
             pipes.update();
             
             // Floor Collision
             if(bird.y + bird.h/2 >= canvas.height - 20){
-                gameOver();
+                if(gameState === 'PLAYING' || gameState === 'GET_READY') {
+                    gameOver();
+                }
             }
             
-            frames++;
+            if(gameState === 'PLAYING' || gameState === 'GET_READY') {
+                 frames++;
+            }
         }
 
         function draw() {
@@ -316,14 +359,15 @@
         }
 
         function loop() {
-            if(gameState === 'PLAYING'){
+            if(gameState !== 'PAUSED') {
                 update();
                 draw();
-                gameLoopId = requestAnimationFrame(loop);
             }
+            gameLoopId = requestAnimationFrame(loop);
         }
 
-        // Start the game engine
+        // Start
         init();
         
         /* --- JS FILE CONTENT END --- */
+    
